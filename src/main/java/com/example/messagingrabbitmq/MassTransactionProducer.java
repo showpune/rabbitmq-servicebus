@@ -2,6 +2,8 @@ package com.example.messagingrabbitmq;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.core.Message;
 import org.springframework.beans.factory.annotation.Value;
 
 @Service
