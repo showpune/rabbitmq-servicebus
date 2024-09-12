@@ -2,6 +2,8 @@ package com.example.messagingrabbitmq;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +42,7 @@ public class MassRolloutRabbitQueueListener2 {
         } catch (Exception exe) {
             log.error("CRITICAL FAILURE (RABBITMQ): listenMassRolloutEvent() ...Error processing rabbit message: {}",
                     LogUtil.getErrorStrFromException(exe));
-            //throw new AmqpRejectAndDontRequeueException(exe);
+            throw new AmqpRejectAndDontRequeueException(exe);
         }
     }
 
@@ -56,7 +58,7 @@ public class MassRolloutRabbitQueueListener2 {
         } catch (Exception exe) {
             log.error("CRITICAL FAILURE (RABBITMQ): listenRemoveEvent() ...Error processing rabbit message: {}",
                     LogUtil.getErrorStrFromException(exe));
-            //throw new AmqpRejectAndDontRequeueException(exe);
+            throw new AmqpRejectAndDontRequeueException(exe);
         }
     }
 
