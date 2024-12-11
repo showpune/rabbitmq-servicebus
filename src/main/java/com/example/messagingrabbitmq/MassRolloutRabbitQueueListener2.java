@@ -3,8 +3,8 @@ package com.example.messagingrabbitmq;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.amqp.AmqpRejectAndDontRequeueException;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import com.azure.spring.messaging.AzureMessagingException;
+import com.azure.spring.messaging.annotation.ServiceBusListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,7 +31,7 @@ public class MassRolloutRabbitQueueListener2 {
      *
      * @param message
      */
-    @RabbitListener(queues = "${rabbitmq.firemassrollout.message.queue.name}", group = "${rabbitmq.firemassrollout.group}", containerFactory = "containerFactoryAckAuto",exclusive = true)
+    @ServiceBusListener(destination = "${rabbitmq.firemassrollout.message.queue.name}", containerFactory = "containerFactoryAckAuto", exclusive = true)
     public void listenMassRolloutEvent(String message) {
         try {
             FlareMessage flareMessage = objectMapper.readValue(message, FlareMessage.class);
@@ -40,13 +40,13 @@ public class MassRolloutRabbitQueueListener2 {
                     flareMessage.getDiscoveryId());
             massRolloutVinEventHandler.handleAddEvent(flareMessage);
         } catch (Exception exe) {
-            log.error("CRITICAL FAILURE (RABBITMQ): listenMassRolloutEvent() ...Error processing rabbit message: {}",
+            log.error("CRITICAL FAILURE (Azure Service Bus): listenMassRolloutEvent() ...Error processing message: {}",
                     LogUtil.getErrorStrFromException(exe));
-            throw new AmqpRejectAndDontRequeueException(exe);
+            throw new AzureMessagingException(exe, ServiceBusErrorSource.ABANDON);
         }
     }
 
-    @RabbitListener(queues = "${rabbitmq.firemassrollout.remove.message.queue.name}", group = "${rabbitmq.firemassrollout.group}", containerFactory = "containerFactoryAckAuto",exclusive = true)
+    @ServiceBusListener(destination = "${rabbitmq.firemassrollout.remove.message.queue.name}", containerFactory = "containerFactoryAckAuto", exclusive = true)
     public void listenRemoveEvent(String message) {
         try {
             FlareMessage flareMessage = objectMapper.readValue(message, FlareMessage.class);
@@ -56,11 +56,9 @@ public class MassRolloutRabbitQueueListener2 {
 
             massRolloutVinEventHandler.handleRemoveEvent(flareMessage);
         } catch (Exception exe) {
-            log.error("CRITICAL FAILURE (RABBITMQ): listenRemoveEvent() ...Error processing rabbit message: {}",
+            log.error("CRITICAL FAILURE (Azure Service Bus): listenRemoveEvent() ...Error processing message: {}",
                     LogUtil.getErrorStrFromException(exe));
-            throw new AmqpRejectAndDontRequeueException(exe);
+            throw new AzureMessagingException(exe, ServiceBusErrorSource.ABANDON);
         }
     }
-
-
 }
