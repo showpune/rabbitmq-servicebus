@@ -1,0 +1,6 @@
+Given the two diffs of java code to migrate from rabbitmq to azure service bus, which one do you think is good, considering
+1) Functionality: Make sure the code before and after change can finish the same work
+2) Code correctness: Make sure the code before and after change import the right package name, method call is right
+3) Complexity of migration: As java have lots of framework support, if the code before change and after change need to use the same way 
+4) Maintainability: Make sure the code before and after change is easy to understand and maintain
+Give the overall score from 1 to 10
